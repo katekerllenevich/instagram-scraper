@@ -4,6 +4,7 @@ import { Auth, Opts } from "./types.js";
 export type { Auth, Opts } from "./types.js";
 export { InstagramSession } from "./session.js";
 export { User } from "./user.js";
+export { Post } from "./post.js"
 
 /**
  * Creates and initializaes new session of Instagram.

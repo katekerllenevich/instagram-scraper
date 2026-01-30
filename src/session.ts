@@ -1,6 +1,7 @@
 import puppeteer, { Browser, Page } from "puppeteer";
 import { Auth, Opts } from "./types.js";
 import { User } from "./user.js";
+import { Post } from "./post.js";
 
 /**
  * Represents a logged in user in their own web browser.
@@ -90,6 +91,25 @@ export class InstagramSession {
         await user.loadInfo();
 
         return user;
+    }
+
+    async getPost(post_id: string): Promise<Post | null> {
+        if (!this.isInit() || !this.authenticated) {
+            return null;
+        }
+
+        const page = await this.page(`https://www.instagram.com/p/${post_id}`);
+        
+        const post = new Post(post_id, page);
+        return post;
+    }
+
+    /**
+     * Close the browser instance.
+     * Any future method calls on this class will likely break.
+     */
+    async close() {
+        await this.browser?.close();
     }
 
     /**

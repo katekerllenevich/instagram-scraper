@@ -241,6 +241,14 @@ export class User {
     }
 
     /**
+     * Close the user's page.
+     * Any future method calls on this class will likely break.
+     */
+    async close() {
+        await this.page?.close();
+    }
+
+    /**
      * Parse counts on Instagram, which usually come including commas.
      *
      * @param num String to try to remove commas from
