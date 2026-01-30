@@ -9,7 +9,7 @@ export class User {
     private info: UserInfo | null = null;
 
     /**
-     * @param username The user's username
+     * @param username The user's username.
      * @param page The puppeteer browser page.
      */
     constructor(

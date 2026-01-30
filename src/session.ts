@@ -81,7 +81,7 @@ export class InstagramSession {
      *          otherwise return the user object.
      */
     async getUser(username: string): Promise<User | null> {
-        if (!this.isInit() || !this.authenticate) {
+        if (!this.isInit() || !this.authenticated) {
             return null;
         }
 
