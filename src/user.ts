@@ -133,6 +133,10 @@ export class User {
                     document.querySelector("header h2")?.textContent ?? null,
                 name: nameEl?.textContent.trim() ?? null,
                 private: isPrivate,
+                verified:
+                    document.querySelector(
+                        'header svg[aria-label="Verified"',
+                    ) != null,
 
                 photoUrl:
                     (
@@ -153,6 +157,7 @@ export class User {
             username: raw.username ?? this.username,
             name: raw.name,
             private: raw.private,
+            verified: raw.verified,
 
             photoUrl: raw.photoUrl,
             bio: raw.bio,

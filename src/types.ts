@@ -16,6 +16,7 @@ export interface UserInfo {
     username: string;
     name: string | null;
     private: boolean;
+    verified: boolean;
 
     photoUrl: string;
     bio: string | null;
