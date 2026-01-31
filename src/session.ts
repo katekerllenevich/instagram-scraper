@@ -93,14 +93,23 @@ export class InstagramSession {
         return user;
     }
 
+    /**
+     * Gets a page instance that represents a post's page on Instagram.
+     *
+     * @param post_id The id of the post.
+     * @returns null if the browser has not been launched or not authenticated,
+     *          otherwise return the post object.
+     */
     async getPost(post_id: string): Promise<Post | null> {
         if (!this.isInit() || !this.authenticated) {
             return null;
         }
 
         const page = await this.page(`https://www.instagram.com/p/${post_id}`);
-        
+
         const post = new Post(post_id, page);
+        await post.load();
+
         return post;
     }
 

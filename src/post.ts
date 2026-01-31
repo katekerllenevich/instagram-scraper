@@ -4,8 +4,10 @@ import { Page } from "puppeteer";
  * Represents a post who's page is open in the browser.
  */
 export class Post {
+    private info: {} | undefined;
+
     /**
-     * 
+     *
      * @param post_id The post's id.
      * @param page The puppeteer browser page.
      */
@@ -13,6 +15,11 @@ export class Post {
         private post_id: string,
         private page: Page,
     ) {}
+
+    /**
+     *
+     */
+    async load() {}
 
     /**
      * Close the post's page.
