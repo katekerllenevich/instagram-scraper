@@ -1,12 +1,26 @@
 import { Page } from "puppeteer";
-import { UserInfo } from "./types.js";
 
 /**
  * Represents a user who's page is open in the browser.
  * Currently the actively signed in user is not guaranteed to work.
  */
 export class User {
-    private info: UserInfo | null = null;
+    private info:
+        | {
+              username: string;
+              name: string | null;
+              private: boolean;
+              verified: boolean;
+
+              avatarUrl: string;
+              bio: string | null;
+              pronouns: string | null;
+
+              posts: number;
+              followers: number;
+              following: number;
+          }
+        | undefined;
 
     /**
      * @param username The user's username.
@@ -18,19 +32,68 @@ export class User {
     ) {}
 
     /**
+     * @returns The username of the account, undefined if data has not been loaded.
+     */
+    getUsername(): string | undefined {
+        return this.info?.username;
+    }
+
+    /**
+     * @returns The account's name, null if not set, undefined if data has not been loaded.
+     */
+    getName(): string | null | undefined {
+        return this.info?.name;
+    }
+
+    /**
+     * @returns True/false the account is private/not, undefined if data has not been loaded.
+     */
+    isPrivate(): boolean | undefined {
+        return this.info?.private;
+    }
+
+    /**
+     * @returns True/false the account is verified/not, undefined if data has not been loaded.
+     */
+    isVerified(): boolean | undefined {
+        return this.info?.verified;
+    }
+
+    /**
+     * @returns The url of the avatar, undefined if data has not been loaded.
+     */
+    getAvatarUrl(): string | undefined {
+        return this.info?.avatarUrl;
+    }
+
+    getBio(): string | null | undefined {
+        return this.info?.bio;
+    }
+
+    getPronouns(): string | null | undefined {
+        return this.info?.pronouns;
+    }
+
+    getPostCount(): number | undefined {
+        return this.info?.posts;
+    }
+
+    getFollowerCount(): number | undefined {
+        return this.info?.followers;
+    }
+
+    getFollowingCount(): number | undefined {
+        return this.info?.following;
+    }
+
+    /**
      * This function finds the user's info and caches it. If it is cached, then
      * is just returns the cached value. The user's info concerns the information
      * about their account (ex: name, follower count, pronouns, etc.).
      *
-     * TODO: find verified status
-     *
      * @returns User's info
      */
-    async getInfo(): Promise<UserInfo> {
-        if (this.info != null) {
-            return this.info;
-        }
-
+    async loadInfo() {
         // load user info
         await this.page.waitForSelector(`header img[alt$="profile picture"]`, {
             timeout: 5000,
@@ -138,7 +201,7 @@ export class User {
                         'header svg[aria-label="Verified"',
                     ) != null,
 
-                photoUrl:
+                avatarUrl:
                     (
                         document.querySelector(
                             'header img[alt$="profile picture"]',
@@ -159,7 +222,7 @@ export class User {
             private: raw.private,
             verified: raw.verified,
 
-            photoUrl: raw.photoUrl,
+            avatarUrl: raw.avatarUrl,
             bio: raw.bio,
             pronouns: raw.pronouns,
 
@@ -167,15 +230,14 @@ export class User {
             followers: this.cleanNum(raw.followerText),
             following: this.cleanNum(raw.followingText),
         };
-
-        return this.info;
     }
 
     /**
-     * Clears any cached information, forcing recalculation when called next.
+     * Reload the page and get refresh information.
      */
-    clearCache() {
-        this.info = null;
+    async reload() {
+        await this.page.reload();
+        this.loadInfo();
     }
 
     /**

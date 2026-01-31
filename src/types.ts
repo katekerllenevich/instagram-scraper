@@ -10,19 +10,3 @@ export interface Opts {
      */
     headless: boolean;
 }
-
-// user.ts
-export interface UserInfo {
-    username: string;
-    name: string | null;
-    private: boolean;
-    verified: boolean;
-
-    photoUrl: string;
-    bio: string | null;
-    pronouns: string | null;
-
-    posts: number;
-    followers: number;
-    following: number;
-}

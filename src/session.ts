@@ -11,19 +11,17 @@ export class InstagramSession {
 
     /**
      * Create a new session.
-     * 
+     *
      * @param auth The authentication options for the account.
      * @param opts Settings for the scraper.
      */
     constructor(
         private auth: Auth,
-        private opts: Opts = {
-            headless: true,
-        },
+        private opts: Opts,
     ) {}
 
     /**
-     * Launches the browser.
+     * Launches the browser and authenticates the account.
      */
     async launch() {
         this.browser = await puppeteer.launch({
@@ -31,20 +29,21 @@ export class InstagramSession {
             // strict args help with some basic bot detection
             args: ["--no-sandbox", "--disable-setuid-sandbox"],
         });
+
+        await this.authenticate();
     }
 
     /**
      * Signs the account into Instagram.
      */
-    async authenticate() {
+    private async authenticate() {
         if (!this.isInit()) {
             return;
         }
 
-        const page = await this.page();
-        await page.goto("https://www.instagram.com/accounts/login/", {
-            waitUntil: "networkidle2",
-        });
+        const page = await this.page(
+            "https://www.instagram.com/accounts/login/",
+        );
 
         // fill in email
         const emailSelector = 'input[name="email"]';
@@ -75,7 +74,7 @@ export class InstagramSession {
 
     /**
      * Gets a user instance that represents a user's page on Instagram.
-     * 
+     *
      * @param username The username of the user.
      * @returns null if the browser has not been launched or not authenticated,
      *          otherwise return the user object.
@@ -85,22 +84,26 @@ export class InstagramSession {
             return null;
         }
 
-        const page = await this.page();
-        await page.goto(`https://www.instagram.com/${username}`, {
-            waitUntil: "networkidle2",
-        });
+        const page = await this.page(`https://www.instagram.com/${username}`);
 
-        return new User(username, page);
+        const user = new User(username, page);
+        await user.loadInfo();
+
+        return user;
     }
 
     /**
      * Creates a new browser page.
-     * 
+     *
      * @returns The puppeteer page object.
      */
-    private async page(): Promise<Page> {
+    private async page(url: string): Promise<Page> {
         const page = await this.browser!.newPage();
         await page.setViewport({ height: 1024, width: 1080 });
+        await page.goto(url, {
+            waitUntil: "networkidle2",
+        });
+
         return page;
     }
 
